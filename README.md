@@ -1,5 +1,7 @@
 # Bitcoin Wallet Generator
 
+![wallpaper.jpg](wallpaper.jpg)
+
 A Python implementation of Bitcoin wallet generation following BIP39, BIP32, and BIP84 standards. This tool demonstrates how Bitcoin wallets derive addresses from mnemonic phrases.
 
 ## Features
@@ -160,6 +162,8 @@ This address is fully controlled by:
 Send BTC here and you can recover it from any Bitcoin wallet using the 12-word mnemonic.
 
 ## Checking Address Balance
+
+![mempool.png](mempool.png)
 
 You can check the balance and transaction history of any generated Bitcoin address using a blockchain explorer:
 
