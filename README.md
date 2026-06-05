@@ -231,6 +231,75 @@ Other popular Bitcoin explorers include:
 - [Blockchain.com](https://blockchain.com)
 - [Btc.com](https://btc.com)
 
+## Selling BTC → USDC/USDT without a connected wallet (`send.py`)
+
+`send.py` does the **inverse** of buying BTC: it spends BTC from the wallet your
+seed controls and asks THORChain to deliver **USDC or USDT to your Ethereum
+address** — all built and signed locally, no browser wallet to connect.
+
+```bash
+poetry run python send.py --to USDC --dest 0xYourEthAddress \
+    --amount-btc 0.01 --mnemonic "word1 word2 ... word12"
+```
+
+By default this is a **dry run**: it builds and signs the transaction, prints a
+full summary plus the raw hex, but **does not broadcast**. Add `--broadcast`
+(and type `SEND` at the prompt) to actually send it.
+
+### How it protects you
+
+- **The deposit address and memo come from THORChain's official quote API** —
+  never hand-crafted here. A wrong memo can burn funds, so the script refuses to
+  invent one.
+- **If THORChain trading is halted, the quote fails and the script aborts** —
+  you can't accidentally send into a paused network.
+- **Every input signature is re-verified** before the transaction is accepted.
+- **`--expected-from`** asserts the derived source address matches what you
+  expect, aborting before any funds are touched if the seed/path is wrong.
+- **Broadcast requires both `--broadcast` and typing `SEND`.**
+
+### Common options
+
+| Flag | Meaning |
+|------|---------|
+| `--to USDC` / `--to USDT` | Stablecoin to receive on Ethereum |
+| `--dest 0x...` | Your Ethereum address that receives the stablecoin |
+| `--amount-btc N` / `--max` | Amount of BTC to swap (or sweep the whole balance) |
+| `--expected-from bc1q...` | Assert the source address (recommended) |
+| `--tolerance-bps 300` | Max slippage (300 = 3%) |
+| `--no-stream` | Disable streaming (streaming is on by default; it lowers slippage on large swaps) |
+| `--fee-rate N` | BTC fee rate in sat/vByte (default: network estimate) |
+| `--broadcast` | Actually send (otherwise dry-run hex only) |
+| `--thornode-url URL` | Override THORNode (default `thornode.ninerealms.com`; fallback `thornode.thorchain.liquify.com`) |
+
+### Example (dry run) and recommended workflow
+
+```bash
+poetry run python send.py --to USDC \
+    --dest 0xD52200Af13cf06C8F1d0c47A71D739aa91F023Fb \
+    --amount-btc 0.01 \
+    --expected-from bc1qew339msll7kxuq9uxuccak3ey7wfn0vrcx6cpq \
+    --mnemonic "your twelve words here ..."
+```
+
+1. **Verify ownership first** with `verify.py` (above).
+2. Run `send.py` **without** `--broadcast` and read the summary carefully —
+   source, amount, vault, memo, expected USDC/USDT out, fees.
+3. **Do a small test swap** (e.g. `--amount-btc 0.0005`) with `--broadcast`,
+   confirm the stablecoin arrives in MetaMask.
+4. Then run the full amount.
+
+⚠️ **Notes**
+
+- THORChain deposit (vault) addresses **rotate**; broadcast promptly after
+  building or the quote expiry passes and you must re-run.
+- You pay a Bitcoin miner fee **and** THORChain fees (the summary shows both).
+- Run offline where possible; the mnemonic is passed on the command line and
+  therefore lands in your shell history — clear it afterward.
+
+> Dependency: `send.py` uses `python-bitcoinlib` for transaction construction
+> and BIP143 SegWit signing.
+
 ## Cross-Chain Swaps with THORSwap
 
 [THORSwap](https://thorswap.finance) enables seamless cross-chain swaps without centralized exchanges. You can swap USDC from Ethereum directly to BTC on Bitcoin:
@@ -277,6 +346,7 @@ This workflow allows you to move value from Ethereum DeFi directly to Bitcoin se
 - `ecdsa` - Elliptic curve cryptography
 - `base58` - Bitcoin address encoding
 - `bech32` - SegWit address encoding
+- `python-bitcoinlib` - transaction construction and BIP143 SegWit signing (used by `send.py`)
 
 ## Standards Implemented
 

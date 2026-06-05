@@ -59,6 +59,18 @@ files = [
 ]
 
 [[package]]
+name = "python-bitcoinlib"
+version = "0.12.2"
+description = "The Swiss Army Knife of the Bitcoin protocol."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "python-bitcoinlib-0.12.2.tar.gz", hash = "sha256:c65ab61427c77c38d397bfc431f71d86fd355b453a536496ec3fcb41bd10087d"},
+    {file = "python_bitcoinlib-0.12.2-py3-none-any.whl", hash = "sha256:2f29a9f475f21c12169b3a6cc8820f34f11362d7ff1200a5703dce3e4e903a44"},
+]
+
+[[package]]
 name = "six"
 version = "1.17.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -73,4 +85,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "b250a3472d0609acca7ab2b6f7520b07f4d74471ccba76fc9c83e3f019f29f67"
+content-hash = "25fc2af76701793f83320814f30f6c1aa820270c25ce9d784b9055cce036fa2a"
